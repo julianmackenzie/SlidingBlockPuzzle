@@ -8,6 +8,8 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <vector>
+#include "Movement.h"
 
 using namespace std;
 
@@ -33,13 +35,23 @@ int main(int argc, char** argv){
   string line;
   string input;
 
+  vector<string> initialConfig;
+
+  getline(the_file, line);
+  int r = line[0];  // grab row count
+  int c = line [2];  // grab col count
+
   // read in input file and set up initial puzzle configuration
   while (std::getline(the_file, line)) {
     std::istringstream iss(line);
-    cout << line << endl;    // this is to verify data input and should not be part of final code
+    initialConfig.push_back(line);  // add each piece's initial state into vector
+    cout << line << endl;    // TODO: REMOVE
   }
 
+  Movement movement(r, c, initialConfig);  // initialize the simulation
+
   //  print out initial puzzle configuration
+  
 
   //  find solution if one exists
   
