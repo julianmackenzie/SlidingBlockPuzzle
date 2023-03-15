@@ -40,8 +40,54 @@ class Grid {
      * description: This function will print a grid in its current state.
      */
     void printGrid() {
-        // TODO: implement grid print
+    // Print top border
+    for (int i = 0; i < cols + 2; i++) {
+        cout << "*";
     }
+    cout << endl;
+
+    // Print grid contents
+    for (int i = 0; i < rows; i++) {
+        cout << "*";
+        for (int j = 0; j < cols; j++) {
+            if (board[i][j].isEmpty()) {
+                cout << ".";
+            } else {
+                cout << board[i][j].getIdentifier();
+            }
+        }
+        cout << "*" << endl;
+    }
+
+    // Print bottom border
+    for (int i = 0; i < cols + 2; i++) {
+        cout << "*";
+    }
+    cout << endl;
+}
+
+
+// And I think we need to put the following code at main
+
+/*
+// read in input file and set up initial puzzle configuration
+while (std::getline(the_file, line)) {
+    std::vector<Piece> row;
+    for (int j = 0; j < c; j++) {
+        if (line[j] == '.') {
+            row.push_back(Piece());
+        } else {
+            row.push_back(Piece(line[j]));
+        }
+    }
+    board.push_back(row);
+}
+
+// Print initial grid state
+cout << "Initial Grid:" << endl;
+printGrid();
+
+*/
 
 
 };
