@@ -2,20 +2,27 @@
 
 //  File Information
 
-class Piece{
+#include <string>
+
+
+using namespace std;
+
+class Piece {
     private:
 
     int row, col, width, height;
     char movement;
+    char id;
 
     public:
 
-    Piece(int r, int c, int w, int h, char mm) {
+    Piece(int r, int c, int w, int h, char mm, char identifier) {
         this->row = r;
         this->col = c;
         this->width = w;
         this->height = h;
         this->movement = mm;
+        this->id = identifier;
     }
     ~Piece() {
 
@@ -32,6 +39,12 @@ class Piece{
     }
     int getHeight() {
         return this->height;
+    }
+    char getMovement() {
+        return this->movement;
+    }
+    char getID() {
+        return this->id;
     }
 
 

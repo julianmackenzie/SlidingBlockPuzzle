@@ -41,6 +41,20 @@ int main(int argc, char** argv){
   int r = line[0];  // grab row count
   int c = line [2];  // grab col count
 
+
+
+  // Grid size error checking
+  if (r <= 0) {
+    cout << "Error: Number of rows must be greater than zero" << endl;
+    return -1;
+  }
+    if (c <= 0) {
+    cout << "Error: Number of columns must be greater than zero" << endl;
+    return -1;
+  }
+
+
+
   // read in input file and set up initial puzzle configuration
   while (std::getline(the_file, line)) {
     std::istringstream iss(line);
@@ -48,11 +62,20 @@ int main(int argc, char** argv){
     cout << line << endl;    // TODO: REMOVE
   }
 
-  Movement movement(r, c, initialConfig);  // initialize the simulation
 
-  //  print out initial puzzle configuration
+
+
+
+  Movement mov(r, c);  // initialize the simulation
+
+
+
+  // add pieces to grid and print grid
+  mov.importGrid(initialConfig);
+
+  // TODO: The code never passes this point. This is strange behavior.
+
   
-
   //  find solution if one exists
   
   return 0;

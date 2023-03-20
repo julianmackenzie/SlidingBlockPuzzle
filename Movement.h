@@ -13,21 +13,17 @@ using namespace std;
 class Movement{
 
     private:
+    int rows;
+    int cols;
+
     set<string> configs;  // used to store simplified grid configs for avoiding redundant moves
     queue<Grid> bfsQueue;
 
+
     public:
-    Movement(int r, int c, vector<string> initialGrid) {
-        vector<string> ml;  // empty move list for initial grid
-        Grid grid(r, c, ml);
-        
-        // TODO: Initialize each piece and add it to a starting grid
-
-        // TODO: Add simplified initial layout to configs set
-
-        // Add starting grid to the queue
-        bfsQueue.push(grid);
-
+    Movement(int r, int c) {
+        this->rows = r;
+        this->cols = c;
     }
 
     ~Movement() {
@@ -36,6 +32,22 @@ class Movement{
 
 
 
+    void importGrid(vector<string> initialConfig) {
+        vector<string> ml;  // empty move list for initial grid
+        Grid grid(this->rows, this->cols, ml);
+
+
+        grid.importGrid(initialConfig);
+
+        // TODO: The code never passes this point. This is strange behavior.
+
+        grid.printGrid();
+
+
+        // Add starting grid to the queue
+        bfsQueue.push(grid);
+    }
+    
 
 
     /*
