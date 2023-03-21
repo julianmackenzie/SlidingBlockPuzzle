@@ -39,7 +39,6 @@ class Movement{
 
         grid.importGrid(initialConfig);
 
-        // TODO: The code never passes this point. This is strange behavior.
 
         grid.printGrid();
 

@@ -38,6 +38,11 @@ class Grid {
             this->moves = moveList;
             this->population = 0;
 
+            vector<vector<Piece*>> newBoard(r, vector<Piece*>(c, nullptr));
+
+            this->board = newBoard;
+            
+
         }
         ~Grid() {
 
@@ -51,6 +56,7 @@ class Grid {
     void importGrid(vector<string> initialConfig) {
         // Go through vector of lines from the data file
         for (string s : initialConfig) {
+
             
             int row;
             int col;
@@ -61,9 +67,13 @@ class Grid {
             // Use stringstream to add data pieces from formatted string
             stringstream data(s);
             data >> row >> col >> width >> height >> movement;
+            
+            // account for the fact that the game is 1-indexed
+            row--;  
+            col--;
 
 
-            // Movement check
+            // Movement error check
             if (movement != 'v' && movement != 'h' && movement != 'b' 
                                                 && movement != 'n')
             {
@@ -77,7 +87,7 @@ class Grid {
             this->population++;
 
 
-            // Bounds check (starting location)
+            // Bounds error check (starting location)
             if (row >= this->rows || col >= this->cols) {
                 cout << "Warning: Piece with starting position of " << row 
                 << "," << col << "falls outside of grid" << endl;
@@ -85,7 +95,8 @@ class Grid {
                 continue;
             }
 
-            // Collision check (starting location)
+
+            // Collision eror check (starting location)
             if (this->board[row][col] != nullptr) {
                 cout << "Warning: Piece with starting position of " << row 
                 << "," << col << "overlaps with other piece" << endl;
@@ -93,19 +104,19 @@ class Grid {
                 continue;
             }
 
-            // TODO: The code never passes this point of the first iteration, with no errors. This is strange behavior.
 
             // add piece of block (starting location)
             Piece newPiece(row, col, width, height, movement, identifier);
             this->board[row][col] = &newPiece;
 
-            cout << newPiece.getID() << endl;  // TODO: Remove debug print
+
+            // ERROR: Uncomment this line to make it almost work? All pieces in printed grid are identical though, the final piece to be added...
+            // cout << "ID: " << this->board[row][col]->getID() << endl;
 
             // TODO: Add more pieces of a block based on width and height and successfully undo all if an error occurs
 
         }
 
-        return;
     }
 
 
@@ -127,26 +138,26 @@ class Grid {
      */
     void printGrid() {
         // Print top border
-        for (int i = 0; i < cols + 2; i++) {
+        for (int i = 0; i < this->cols + 2; i++) {
             cout << "*";
         }
         cout << endl;
 
         // Print grid contents
-        for (int i = 0; i < rows; i++) {
+        for (int i = 0; i < this->rows; i++) {
             cout << "*";
             for (int j = 0; j < cols; j++) {
                 if (this->board[i][j] == nullptr) {
                     cout << ".";
                 } else {
-                    cout << board[i][j]->getID();
+                    cout << this->board[i][j]->getID();
                 }
             }
             cout << "*" << endl;
         }
 
         // Print bottom border
-        for (int i = 0; i < cols + 2; i++) {
+        for (int i = 0; i < this->cols + 2; i++) {
             cout << "*";
         }
         cout << endl;

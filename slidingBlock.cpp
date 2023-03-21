@@ -38,8 +38,8 @@ int main(int argc, char** argv){
   vector<string> initialConfig;
 
   getline(the_file, line);
-  int r = line[0];  // grab row count
-  int c = line [2];  // grab col count
+  char r = line[0] - 48;  // grab row count and "convert" to int
+  char c = line[3] - 48;  // grab col count and "convert" to int
 
 
 
@@ -73,7 +73,6 @@ int main(int argc, char** argv){
   // add pieces to grid and print grid
   mov.importGrid(initialConfig);
 
-  // TODO: The code never passes this point. This is strange behavior.
 
   
   //  find solution if one exists
