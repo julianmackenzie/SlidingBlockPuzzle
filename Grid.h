@@ -45,19 +45,27 @@ class Grid {
 
         }
         ~Grid() {
-
+            // TODO: Free Pieces from memory when done with Grid
         }
 
 
     
 
     
-
+    /*
+     * function: importGrid()
+     *
+     * description: This function is used to initialize a Grid from a .data
+     * file. It will populate the Grid with Piece objects. Additionally, this
+     * will screen each Piece as it is imported to ensure that only valid Piece
+     * placements will be added to the Grid.
+     * 
+     */
     void importGrid(vector<string> initialConfig) {
-        // Go through vector of lines from the data file
+        // Go through vector of lines from the data file to import at Pieces
         for (string s : initialConfig) {
 
-            
+            // Data members for Piece
             int row;
             int col;
             int width;
@@ -73,50 +81,79 @@ class Grid {
             col--;
 
 
+
+            bool errorFound = false;  // will be used to correctly skip errant pieces
+
             // Movement error check
             if (movement != 'v' && movement != 'h' && movement != 'b' 
                                                 && movement != 'n')
             {
                 cout << "Warning: Piece with starting position of " << row 
                 << "," << col << "has invalid movement" << endl;
+                errorFound = true;
+            }
+
+            if (errorFound) {
                 continue;
             }
+
 
             // Get unique identifier
             char identifier = idLibrary[this->population];
             this->population++;
 
 
-            // Bounds error check (starting location)
-            if (row >= this->rows || col >= this->cols) {
-                cout << "Warning: Piece with starting position of " << row 
-                << "," << col << "falls outside of grid" << endl;
+            // Bounds error check (full piece)
+            if (row >= this->rows || col >= this->cols || 
+                row+(height-1) >= this->rows || col+(width-1) >= this->cols) {
+
+                cout << "Warning: Piece with starting position of " << row+1 
+                << "," << col+1 << " falls outside of grid" << endl;
+                errorFound = true;
+            }
+
+            if (errorFound) {
                 population--;
                 continue;
             }
 
 
-            // Collision eror check (starting location)
-            if (this->board[row][col] != nullptr) {
-                cout << "Warning: Piece with starting position of " << row 
-                << "," << col << "overlaps with other piece" << endl;
+            // Collision error check (full piece)
+            for (int i=0; i<height; i++) {
+                for (int j=0; j<width; j++) {
+                    if (this->board[row+i][col+j] != nullptr) {
+
+                        cout << "Warning: Piece with starting position of " <<
+                        row+1 << "," << col+1 << " overlaps with other piece"
+                        << endl;
+                        errorFound = true;
+                        break;  // don't need to keep checking/>1 error message
+                    }
+                }
+            }
+
+            if (errorFound) {
                 population--;
                 continue;
             }
 
 
-            // add piece of block (starting location)
-            Piece newPiece(row, col, width, height, movement, identifier);
-            this->board[row][col] = &newPiece;
+
+            //
+            // Code below this line will execute only if the whole piece will be valid
+            //
 
 
-            // ERROR: Uncomment this line to make it almost work? All pieces in printed grid are identical though, the final piece to be added...
-            // cout << "ID: " << this->board[row][col]->getID() << endl;
-
-            // TODO: Add more pieces of a block based on width and height and successfully undo all if an error occurs
-
+            // add all parts of the Piece to the board
+            for (int i=0; i<height; i++) {
+                for (int j=0; j<width; j++) {
+                    Piece *newPiece = new Piece(row+i, col+j, width, height, 
+                                                    movement, identifier);
+                    this->board[row+i][col+j] = newPiece;  // add piece to board
+                }
+            }
+            
         }
-
     }
 
 
