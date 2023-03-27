@@ -63,7 +63,7 @@ class Grid {
      * will screen each Piece as it is imported to ensure that only valid Piece
      * placements will be added to the Grid.
      */
-    void importGrid(vector<string> initialConfig, string moveList) {
+    void importGrid(vector<string> initialConfig, string moveList, bool firstTime) {
         // Go through vector of lines from the data file to import at Pieces
         for (string s : initialConfig) {
 
@@ -90,8 +90,11 @@ class Grid {
             if (movement != 'v' && movement != 'h' && movement != 'b' 
                                                 && movement != 'n')
             {
-                cout << "Warning: Piece with starting position of " << row 
-                << "," << col << "has invalid movement" << endl;
+                if (firstTime == true) {
+                    cout << "Warning: Piece with starting position of " << row 
+                    << "," << col << "has invalid movement" << endl;
+                }
+
                 errorFound = true;
             }
 
@@ -109,8 +112,10 @@ class Grid {
             if (row >= this->rows || col >= this->cols || 
                 row+(height-1) >= this->rows || col+(width-1) >= this->cols) {
 
-                cout << "Warning: Piece with starting position of " << row+1 
-                << "," << col+1 << " falls outside of grid" << endl;
+                if (firstTime == true) {
+                    cout << "Warning: Piece with starting position of " << row+1 
+                    << "," << col+1 << " falls outside of grid" << endl;
+                }
                 errorFound = true;
             }
 
@@ -125,9 +130,11 @@ class Grid {
                 for (int j=0; j<width; j++) {
                     if (this->board[row+i][col+j] != nullptr) {
 
-                        cout << "Warning: Piece with starting position of " <<
-                        row+1 << "," << col+1 << " overlaps with other piece"
-                        << endl;
+                        if (firstTime == true) {
+                            cout << "Warning: Piece with starting position of " <<
+                            row+1 << "," << col+1 << " overlaps with other piece"
+                            << endl;
+                        }
                         errorFound = true;
                         break;  // don't need to keep checking
                     }
@@ -210,15 +217,128 @@ class Grid {
 
 
 
+    /*
+     *  // TODO
+     *
+     *
+     * 
+     */
+    void tryMove(vector<vector<string>> &pieceConfigs, vector<string> &mlData, int id, char dir) {
+
+        int dist = 1;
+        bool canMove = true;  // set to true to start
+
+        while (canMove == true) {
+            for (Piece* p : this->pieces[this->idLibrary[id]]) {  // check each part of the piece for collisions
+                
+                // find prospective new coordinate for piece
+                int newPlace;
+                if (dir == 'u') newPlace = p->getRow()-dist;
+                if (dir == 'd') newPlace = p->getRow()+dist;
+                if (dir == 'l') newPlace = p->getCol()-dist;
+                if (dir == 'r') newPlace = p->getCol()+dist;
+
+                
+                // bounds check (don't attempt out of bounds moves)
+                if (dir == 'u' || dir == 'd') {
+                    if (newPlace < 0 || newPlace >= this->rows) {
+                        canMove = false;
+                        break;
+                    }
+                }
+                if (dir == 'l' || dir == 'r') {
+                    if (newPlace < 0 || newPlace >= this->cols) {
+                        canMove = false;
+                        break;
+                    }
+                }
+
+                
+                // collision check
+                if (dir == 'u' || dir == 'd') {
+                    // if new spot is filled by a different piece
+                    if (this->board[newPlace][p->getCol()] != nullptr && 
+                                                this->board[newPlace][p->getCol()]->getID() != p->getID()) {
+                        canMove = false;  // changes to false if any part of the piece collides
+                        break;
+                    }
+                }
+                if (dir == 'l' || dir == 'r') {
+                    // if new spot is filled by a different piece
+                    if (this->board[p->getRow()][newPlace] != nullptr && 
+                                                this->board[p->getRow()][newPlace]->getID() != p->getID()) {
+                        canMove = false;  // changes to false if any part of the piece collides
+                        break;
+                    }
+                }
+
+            }
+
+
+
+
+            if (canMove == true) {  // if entire piece is able to move [dist] in given direction
+                int oldPlace;
+                
+                
+                if (dir == 'u' || dir == 'd') {
+                    oldPlace = this->pieces[this->idLibrary[id]][0]->getRow();  // store old location
+                    if (dir == 'u') this->pieces[this->idLibrary[id]][0]->setRow(oldPlace-dist);  // fake move to new location
+                    if (dir == 'd') this->pieces[this->idLibrary[id]][0]->setRow(oldPlace+dist);  // fake move to new location
+                }
+                if (dir == 'l' || dir == 'r') {
+                    oldPlace = this->pieces[this->idLibrary[id]][0]->getCol();  // store old location
+                    if (dir == 'l') this->pieces[this->idLibrary[id]][0]->setCol(oldPlace-dist);  // fake move to new location
+                    if (dir == 'r') this->pieces[this->idLibrary[id]][0]->setCol(oldPlace+dist);  // fake move to new location
+                }
+
+                pieceConfigs.push_back(this->exportGrid());  // add entire setup to our BFS queue return
+                
+                // assemble string to represent move
+                string move = this->exportMovelist();
+                move += this->pieces[this->idLibrary[id]][0]->getID();  // id
+                if (dir == 'u') move += "u";  // direction
+                if (dir == 'd') move += "d";
+                if (dir == 'l') move += "l";
+                if (dir == 'r') move += "r";
+                
+                move += to_string(dist);  // distance
+                
+                mlData.push_back(move);  // add move to our movelist queue return
+                
+                // reset piece to starting spot
+                if (dir == 'u' || dir == 'd') this->pieces[this->idLibrary[id]][0]->setRow(oldPlace);  
+                if (dir == 'l' || dir == 'r') this->pieces[this->idLibrary[id]][0]->setCol(oldPlace);  
+                
+            }
+
+            dist++;
+        }
+    }
 
 
 
     // TODO: for each possible move, use exportGrid to get pieceConfig, exportMovelist to get mlData,
     // and simplify to get simple string for simplifiedConfig
 
-    void findAllMoves(vector<vector<string>> &pieceConfigs, vector<string> &mlData, 
-                                                                                vector<string> &simplifiedConfig) {
-        
+    void findAllMoves(vector<vector<string>> &pieceConfigs, vector<string> &mlData) {
+        for (int i=0; i<this->population; i++) {
+            char movement = this->pieces[this->idLibrary[i]][0]->getMovement();
+            if (movement == 'n') continue;
+            else {
+                bool canMove;
+                if (movement == 'b' || movement == 'v') {
+                    tryMove(pieceConfigs, mlData, i, 'u');
+                    tryMove(pieceConfigs, mlData, i, 'd');
+                }
+                if (movement == 'b' || movement == 'h') {
+                    tryMove(pieceConfigs, mlData, i, 'l');
+                    tryMove(pieceConfigs, mlData, i, 'r');
+                }
+            }
+        }
+
+        return;
     }
 
 
@@ -298,9 +418,12 @@ class Grid {
      * and false if not.
      */
     bool isSolved() {
-        // TODO: Implement
+        bool atGoal = false;
+        for (Piece* p : this->pieces['Z']) {
+            if (p->getCol() == this->cols-1) atGoal = true;
+        }
 
-        return false;
+        return atGoal;
     }
 
 

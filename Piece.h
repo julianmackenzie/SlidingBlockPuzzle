@@ -31,8 +31,14 @@ class Piece {
     int getRow() {
         return this->row;
     }
+    void setRow(int r) {
+        this->row = r;
+    }
     int getCol() {
         return this->col;
+    }
+    void setCol(int c) {
+        this->col = c;
     }
     int getWidth() {
         return this->width;

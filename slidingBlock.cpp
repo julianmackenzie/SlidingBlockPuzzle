@@ -59,7 +59,6 @@ int main(int argc, char** argv){
   while (std::getline(the_file, line)) {
     std::istringstream iss(line);
     initialConfig.push_back(line);  // add each piece's initial state into vector
-    cout << line << endl;    // TODO: REMOVE
   }
 
 

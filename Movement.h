@@ -38,13 +38,10 @@ class Movement {
 
 
         string ml = "";  // empty move list for initial grid
-        grid.importGrid(initialConfig, ml);  // populate the grid with pieces from the data file
+        grid.importGrid(initialConfig, ml, true);  // populate the grid with pieces from the data file
 
 
         grid.printGrid();  // initial print
-
-        configs.emplace(grid.simplify());  // Adds initial grid config to the set of all configs
-
 
         // Add starting grid to the queue
         bfsQueue.push(initialConfig);
@@ -75,7 +72,19 @@ class Movement {
             vector<string> pieceData = bfsQueue.front();  // get next grid config
             string ml = mlQueue.front();  // get next grid's movelist
 
-            grid.importGrid(pieceData, ml);  // add data for this iteration's grid
+            grid.importGrid(pieceData, ml, false);  // add data for this iteration's grid
+
+
+            string currentConfig = grid.simplify();  // get simplified grid config
+
+            if (this->configs.count(currentConfig)) {  // if this is not a unique grid, don't process it
+                bfsQueue.pop();
+                mlQueue.pop();
+                continue;
+            }
+
+            this->configs.emplace(grid.simplify());  // if this is a unique grid, add its simplified config to map
+
 
             if (grid.isSolved()) {  // if the Z piece has reached the goal
                 solutionFound = true;  // we found the shortest solution!
@@ -83,18 +92,18 @@ class Movement {
             }
 
 
+            
+
+
             vector<vector<string>> validMoves;  // compiled list of valid moves
             vector<string> validMovelists;  // compiled list of corresponding movelists
-            vector<string> validGridConfigs;  // stores simplified grids to sort out non-unique moves
-            grid.findAllMoves(validMoves, validMovelists, validGridConfigs);
+            grid.findAllMoves(validMoves, validMovelists);
 
 
             // Adding to back of queues
             for (int i=0; i<validMoves.size(); i++) {
-                if (!this->configs.count(validGridConfigs[i])) {  // if move leads to a unique grid
-                    bfsQueue.push(validMoves[i]);
-                    mlQueue.push(validMovelists[i]);
-                }
+                bfsQueue.push(validMoves[i]);
+                mlQueue.push(validMovelists[i]);
             }
 
 
@@ -106,7 +115,33 @@ class Movement {
         }
 
         if (solutionFound) {
-            // TODO: Print movelist of solution and number of moves (movelist size/3)
+            // Print movelist of solution and number of moves (movelist size/3)
+            Grid grid(this->rows, this->cols);
+
+            vector<string> pieceData = bfsQueue.front(); // get solved grid's piece data
+            
+            string ml = mlQueue.front();  // get solved grid's movelist
+
+            grid.importGrid(pieceData, ml, false);  // load solved grid
+
+            
+            
+            cout << endl << "This puzzle is solvable in " << ml.size()/3 << " steps" << endl << endl;
+            
+            grid.printGrid();
+            cout << endl;
+            int i=0;
+            while (i<ml.size()) {
+                cout << i/3 + 1 << ". Piece " << ml[i] << " moves " << ml[i+2] << " spaces(s) ";
+                if (ml[i+1] == 'u') cout << "up" << endl;
+                if (ml[i+1] == 'd') cout << "down" << endl;
+                if (ml[i+1] == 'l') cout << "left" << endl;
+                if (ml[i+1] == 'r') cout << "right" << endl;
+                i += 3;
+            }
+
+            
+            
         }
         else {
             cout << "This puzzle has no solution" << endl;
