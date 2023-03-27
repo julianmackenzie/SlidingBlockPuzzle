@@ -64,7 +64,6 @@ class Movement {
      * 
      */
     bool processGrid() {
-        bool solutionFound;
         while(!bfsQueue.empty()) {  // loop as long as there are unique moves to try
             
             Grid grid(this->rows, this->cols);  // make a grid to hold the current data
@@ -87,7 +86,6 @@ class Movement {
 
 
             if (grid.isSolved()) {  // if the Z piece has reached the goal
-                solutionFound = true;  // we found the shortest solution!
                 break;
             }
 
@@ -114,7 +112,8 @@ class Movement {
             mlQueue.pop();  // move to next corresponding movelist, too
         }
 
-        if (solutionFound) {
+        // Solution found
+        if (bfsQueue.size() != 0) {
             // Print movelist of solution and number of moves (movelist size/3)
             Grid grid(this->rows, this->cols);
 
@@ -140,15 +139,17 @@ class Movement {
                 i += 3;
             }
 
-            
+            return true;
             
         }
-        else {
-            cout << "This puzzle has no solution" << endl;
-        }
+
+        // No solution found
+        cout << "This puzzle has no solution" << endl;
+        return false;
 
 
-        return solutionFound;
+
+        
     }
 
 };

@@ -218,9 +218,10 @@ class Grid {
 
 
     /*
-     *  // TODO
+     * function: tryMove
      *
-     *
+     * description: This is a helper function for findAllMoves().
+     * Attempts all possibe moves on a single piece in a single direction.
      * 
      */
     void tryMove(vector<vector<string>> &pieceConfigs, vector<string> &mlData, int id, char dir) {

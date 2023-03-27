@@ -29,7 +29,7 @@ int main(int argc, char** argv){
   }
 
   cout << "Welcome to Sliding Block Puzzle\n";
-  cout << "Using data from puzzle: " << argv[1] << endl;
+  cout << "Using data from puzzle: " << argv[1] << endl << endl;
   
   bool done = false;
   string line;
