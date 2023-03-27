@@ -10,7 +10,7 @@
 
 using namespace std;
 
-class Movement{
+class Movement {
 
     private:
     int rows;
@@ -37,10 +37,12 @@ class Movement{
         Grid grid(this->rows, this->cols, ml);
 
 
-        grid.importGrid(initialConfig);
+        grid.importGrid(initialConfig);  // populate the grid with pieces from the data file
 
 
-        grid.printGrid();
+        grid.printGrid();  // initial print
+
+        configs.emplace(grid.getSnapshot());  // Adds initial grid config to the set of all configs
 
 
         // Add starting grid to the queue
@@ -62,7 +64,21 @@ class Movement{
      * 
      */
     bool processGrid() {
-        return false;
+        bool solutionFound;
+        while(!bfsQueue.empty()) {  // loop as long as there are unique moves to try
+            Grid grid = bfsQueue.front();  // get next grid config
+
+            if (grid.isSolved()) {  // if the Z piece has reached the goal
+                solutionFound = true;
+                break;
+            }
+
+            // TODO: Get all possible unique moves from grid, add them to bfsQueue, then check for solved state
+
+            bfsQueue.pop();
+        }
+
+        return solutionFound;
     }
 
 };

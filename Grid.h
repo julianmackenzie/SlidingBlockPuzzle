@@ -203,4 +203,72 @@ class Grid {
 
 
 
+    /*
+     *
+     * function: getSnapshot()
+     * 
+     * description: This function returns critical data of the grid in string format. This will be used to
+     * easily compare grid states so that no two configurations are ever visited twice.
+     * 
+     */
+    string getSnapshot() {
+        string snapshot = "";
+
+        // Append the number of rows and columns
+        snapshot += to_string(this->rows) + ";" + to_string(this->cols) + ";";
+
+        // Append the population count
+        snapshot += to_string(this->population) + ";";
+
+        // Append the current moves
+        for (string move : this->moves) {
+            snapshot += move + ",";
+        }
+        // Remove the trailing comma
+        snapshot.pop_back();
+        snapshot += ";";
+
+        // Append the current state of the board
+        for (int i = 0; i < this->rows; i++) {
+            for (int j = 0; j < this->cols; j++) {
+                if (this->board[i][j] == nullptr) {
+                    snapshot += " ";
+                } else {
+                    snapshot += this->board[i][j]->getID();
+                }
+            }
+            snapshot += ";";
+        }
+
+        // Remove the trailing semicolon
+        snapshot.pop_back();
+
+        return snapshot;
+    }
+
+
+
+    /*
+     *
+     * function: isSolved()
+     * 
+     * description: return a boolean value, true if the grid has a Z piece at the right side of the board
+     * and false if not.
+     * 
+     */
+    bool isSolved() {
+        // TODO: Implement
+
+        return false;
+    }
+
+
+
+
+
 };
+
+
+
+
+
