@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 #include <sstream>
 #include <iostream>
 #include "Piece.h"
@@ -17,6 +18,8 @@ class Grid {
     int rows, cols;
     vector<vector<Piece*>> board;
 
+    map<char, vector<Piece*>> pieces;  // will hold all Pieces for each ID for easy access
+
     int population;
 
 
@@ -25,17 +28,17 @@ class Grid {
 
 
     // Data Member "moves": 
-    // used to store moves up to the current board in format "xyz"
+    // used to store moves up to the current board in format "xyz*"...
     // x: letter or number identifier for piece
     // y: direction moved
     // z: number of spaces moved in that direction
-    vector<string> moves;
+    // ...repeated any number of times
+    string moves;
 
     public:
-        Grid(int r, int c, vector<string> moveList) {
+        Grid(int r, int c) {
             this->rows = r;
             this->cols = c;
-            this->moves = moveList;
             this->population = 0;
 
             vector<vector<Piece*>> newBoard(r, vector<Piece*>(c, nullptr));
@@ -59,9 +62,8 @@ class Grid {
      * file. It will populate the Grid with Piece objects. Additionally, this
      * will screen each Piece as it is imported to ensure that only valid Piece
      * placements will be added to the Grid.
-     * 
      */
-    void importGrid(vector<string> initialConfig) {
+    void importGrid(vector<string> initialConfig, string moveList) {
         // Go through vector of lines from the data file to import at Pieces
         for (string s : initialConfig) {
 
@@ -127,7 +129,7 @@ class Grid {
                         row+1 << "," << col+1 << " overlaps with other piece"
                         << endl;
                         errorFound = true;
-                        break;  // don't need to keep checking/>1 error message
+                        break;  // don't need to keep checking
                     }
                 }
             }
@@ -149,6 +151,10 @@ class Grid {
                 for (int j=0; j<width; j++) {
                     Piece *newPiece = new Piece(row+i, col+j, width, height, 
                                                     movement, identifier);
+                    this->pieces[identifier].push_back(newPiece);  // add Piece to map of Pieces
+
+                    this->moves = moveList;  // import Move List
+                    
                     this->board[row+i][col+j] = newPiece;  // add piece to board
                 }
             }
@@ -156,6 +162,64 @@ class Grid {
         }
     }
 
+
+
+
+
+    /*
+     * function: exportGrid()
+     * 
+     * description: Imitates the creation of a .data file using a preexisting grid
+     */
+    vector<string> exportGrid() {
+
+        vector<string> config;
+        for (int i=0; i<this->population; i++) {
+
+            // grab first piece of a block (origin piece). this is done in the order pieces are created in
+            Piece* originPiece = this->pieces[idLibrary[i]][0];  
+
+            string acc = "";
+            acc += to_string(originPiece->getRow()+1);  // Account for data files being 1-indexed
+            acc += " ";
+            acc += to_string(originPiece->getCol()+1);  // Account for data files being 1-indexed
+            acc += " ";
+            acc += to_string(originPiece->getWidth());
+            acc += " ";
+            acc += to_string(originPiece->getHeight());
+            acc += " ";
+            acc += originPiece->getMovement();
+
+            config.push_back(acc);
+        }
+
+        return config;
+    }
+
+
+    /*
+     * function: exportMovelist()
+     *
+     * description: simple getter that fetches the grid's current movelist.
+     * used alongside exportGrid() to get all needed data for BFS
+     */
+    string exportMovelist() {
+        return this->moves;
+    }
+
+
+
+
+
+
+
+    // TODO: for each possible move, use exportGrid to get pieceConfig, exportMovelist to get mlData,
+    // and simplify to get simple string for simplifiedConfig
+
+    void findAllMoves(vector<vector<string>> &pieceConfigs, vector<string> &mlData, 
+                                                                                vector<string> &simplifiedConfig) {
+        
+    }
 
 
 
@@ -204,57 +268,34 @@ class Grid {
 
 
     /*
-     *
-     * function: getSnapshot()
+     * function: simplify()
      * 
-     * description: This function returns critical data of the grid in string format. This will be used to
-     * easily compare grid states so that no two configurations are ever visited twice.
-     * 
+     * description: This function returns piece data of the grid in simple string format. This will be used
+     * to easily compare grid states so that no two configurations are ever visited twice.
      */
-    string getSnapshot() {
-        string snapshot = "";
-
-        // Append the number of rows and columns
-        snapshot += to_string(this->rows) + ";" + to_string(this->cols) + ";";
-
-        // Append the population count
-        snapshot += to_string(this->population) + ";";
-
-        // Append the current moves
-        for (string move : this->moves) {
-            snapshot += move + ",";
-        }
-        // Remove the trailing comma
-        snapshot.pop_back();
-        snapshot += ";";
-
+    string simplify() {
+        string simplified = "";
         // Append the current state of the board
         for (int i = 0; i < this->rows; i++) {
             for (int j = 0; j < this->cols; j++) {
                 if (this->board[i][j] == nullptr) {
-                    snapshot += " ";
+                    simplified += " ";  // no piece here
                 } else {
-                    snapshot += this->board[i][j]->getID();
+                    simplified += this->board[i][j]->getID();  // piece here
                 }
             }
-            snapshot += ";";
         }
 
-        // Remove the trailing semicolon
-        snapshot.pop_back();
-
-        return snapshot;
+        return simplified;
     }
 
 
 
     /*
-     *
      * function: isSolved()
      * 
      * description: return a boolean value, true if the grid has a Z piece at the right side of the board
      * and false if not.
-     * 
      */
     bool isSolved() {
         // TODO: Implement

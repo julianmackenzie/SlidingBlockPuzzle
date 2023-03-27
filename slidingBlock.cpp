@@ -71,7 +71,9 @@ int main(int argc, char** argv){
 
 
   // add pieces to grid and print grid
-  mov.importGrid(initialConfig);
+  mov.importData(initialConfig);
+
+  mov.processGrid();
 
 
   
