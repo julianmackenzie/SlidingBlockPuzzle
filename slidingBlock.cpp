@@ -1,8 +1,27 @@
-//    Author Information
-// Jiwon Jung (Keith) did this go through?
-// Julian Mackenzie yes!
+//  Author Information
+//  Julian Mackenzie jbm5 662056584
+//  Jiwon Jung jjung65 668675721
 
 //    Program information
+/*
+This program is a simulation of a Sliding Block puzzle game. In Grid.h, a board
+with rectangular Pieces is created, with each Piece being allowed to move a 
+specified set of directions across the board. The target is to get the first
+placed piece, labeled "Z", to the right edge of the game board. This marks the
+puzzle as solved.
+
+What makes this program interesting is that it does not have the user play the
+game. Instead, using a Breadth First Search, the program will solve the puzzle
+for the user, outputting the list of moves that it took to get to the answer.
+This will always be the shortest amount of moves that could be taken. It will
+also recognize when a problem is completely impossible to solve.
+
+The functionality is split across three header files:
+Movement.h - where the BFS happens and many, many Grid instances are processed
+Grid.h - where any particular moment of the game is represented as a board filled
+with Pieces
+Piece.h - where the bare data for the location and size of each Piece is held.
+*/
 
 #include <fstream>
 #include <iostream>

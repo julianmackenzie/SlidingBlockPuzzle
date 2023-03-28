@@ -1,6 +1,17 @@
 //  Author Information
+//  Julian Mackenzie jbm5 662056584
+//  Jiwon Jung jjung65 668675721
 
 //  File Information
+/*
+Grid.h is where the bulk of the functionality lays. It's got a 2D matrix
+representing the game board and a map holding all of the fragments of each Piece
+(as they can be multiple spaces wide and tall). It has many functions, some of
+which are designed as helper functions to be used inside of the class but could
+also be helpful in some circumstances as standalone functions usable on a
+particular class object. Abstraction was used where possible to avoid repeated
+code.
+*/
 
 #include <vector>
 #include <string>
@@ -49,6 +60,11 @@ class Grid {
         }
         ~Grid() {
             // TODO: Free Pieces from memory when done with Grid
+            for (int i=0; i<this->population; i++) {
+                for (Piece* p : this->pieces[this->idLibrary[i]]) {
+                    delete (p);
+                }
+            }
         }
 
 
@@ -319,8 +335,13 @@ class Grid {
 
 
 
-    // TODO: for each possible move, use exportGrid to get pieceConfig, exportMovelist to get mlData,
-    // and simplify to get simple string for simplifiedConfig
+    /*
+     * function: findAllMoves()
+     *
+     * description: This function primarily uses the tryMove() function (above) to get all possible moves
+     * for all possible pieces. It passes the results of these moves back by reference, where they're
+     * added to Movement.h's queues in processGrid().
+     */
 
     void findAllMoves(vector<vector<string>> &pieceConfigs, vector<string> &mlData) {
         for (int i=0; i<this->population; i++) {

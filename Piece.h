@@ -1,6 +1,12 @@
 //  Author Information
+//  Julian Mackenzie jbm5 662056584
+//  Jiwon Jung jjung65 668675721
 
 //  File Information
+/*
+Piece.h contains all of the necessary data members to represent a piece on the
+board. This is very simple, containing only getter and setter functions.
+*/
 
 #include <string>
 

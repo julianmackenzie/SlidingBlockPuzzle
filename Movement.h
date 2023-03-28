@@ -1,6 +1,21 @@
 //  Author Information
+//  Julian Mackenzie jbm5 662056584
+//  Jiwon Jung jjung65 668675721
 
 //  File Information
+/*
+Movement.h is the class that facilitates the BFS and the facade of "moving"
+pieces (described below) and contains several structures which, when modified
+using data in unique Grid objects, aid in this. The set "configs" holds all
+unique places that a game's Pieces can be in, in a simplified string format.
+The queue bfsQueue is the primary data structure in running the BFS. It holds
+vectors of strings in a format identical to the initial data file import, so
+that Grids can be easily constructed without necessarily storing a full
+structure inside of another. There is an additional queue, mlQueue, to hold the
+corresponding move lists for these Grids. They share the same "index" as their
+respective Grids, so the Grid data will always be processed with its matching
+list of moves.
+*/
 
 #include <set>
 #include <string>
@@ -91,14 +106,12 @@ class Movement {
 
 
             
-
-
             vector<vector<string>> validMoves;  // compiled list of valid moves
             vector<string> validMovelists;  // compiled list of corresponding movelists
             grid.findAllMoves(validMoves, validMovelists);
 
 
-            // Adding to back of queues
+            // Adding found moves and respective movelists to back of queues
             for (int i=0; i<validMoves.size(); i++) {
                 bfsQueue.push(validMoves[i]);
                 mlQueue.push(validMovelists[i]);
@@ -112,23 +125,22 @@ class Movement {
             mlQueue.pop();  // move to next corresponding movelist, too
         }
 
+
+
         // Solution found
         if (bfsQueue.size() != 0) {
-            // Print movelist of solution and number of moves (movelist size/3)
-            Grid grid(this->rows, this->cols);
-
-            vector<string> pieceData = bfsQueue.front(); // get solved grid's piece data
             
+            Grid grid(this->rows, this->cols);
+            vector<string> pieceData = bfsQueue.front(); // get solved grid's piece data
             string ml = mlQueue.front();  // get solved grid's movelist
-
             grid.importGrid(pieceData, ml, false);  // load solved grid
 
-            
-            
+            // Print movelist of solution and number of moves (movelist size/3)
             cout << endl << "This puzzle is solvable in " << ml.size()/3 << " steps" << endl << endl;
-            
+
             grid.printGrid();
             cout << endl;
+            
             int i=0;
             while (i<ml.size()) {
                 cout << i/3 + 1 << ". Piece " << ml[i] << " moves " << ml[i+2] << " spaces(s) ";
@@ -143,13 +155,12 @@ class Movement {
             
         }
 
+
         // No solution found
         cout << "This puzzle has no solution" << endl;
         return false;
 
 
-
-        
     }
 
 };
